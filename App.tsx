@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { PenTool, Sparkles, AlertCircle, ArrowRight, Hash, Tag, Image as ImageIcon, Search, Globe, Languages, Camera } from 'lucide-react';
+import { PenTool, Sparkles, AlertCircle, ArrowRight, Hash, Tag, Image as ImageIcon, Search, Globe, Languages, Camera, RefreshCw } from 'lucide-react';
 import { APP_TITLE, APP_SUBTITLE } from './constants';
 import { TitleState, PRESET_PURPOSES } from './types';
 import { generateTitles } from './services/geminiService';
@@ -19,8 +18,8 @@ const App: React.FC = () => {
     error: null,
   });
 
-  const handleGenerate = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleGenerate = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!state.content.trim() || !state.purpose.trim()) return;
 
     setState(prev => ({ 
@@ -228,6 +227,7 @@ const App: React.FC = () => {
                   {state.selectedKeywords.length > 0 && (
                     <div className="flex flex-wrap gap-2 animate-in fade-in zoom-in duration-200">
                       <button 
+                        id="google-search-button"
                         onClick={() => handleSearch('google')}
                         className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs font-medium transition-all shadow-md shadow-blue-500/20"
                         title="在 Google 图片中搜索"
@@ -236,6 +236,7 @@ const App: React.FC = () => {
                         Google
                       </button>
                       <button 
+                        id="pixabay-search-button"
                         onClick={() => handleSearch('pixabay')}
                         className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-medium transition-all shadow-md shadow-emerald-500/20"
                         title="在 Pixabay 中搜索免费素材"
@@ -244,6 +245,7 @@ const App: React.FC = () => {
                         Pixabay
                       </button>
                       <button 
+                        id="vcg-search-button"
                         onClick={() => handleSearch('vcg')}
                         className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white rounded-lg text-xs font-medium transition-all shadow-md shadow-red-500/20"
                         title="在视觉中国中搜索"
@@ -291,9 +293,19 @@ const App: React.FC = () => {
             )}
 
             <div className="space-y-5">
-              <div className="flex items-center gap-2 mb-4 px-1">
-                <Sparkles className="text-[#95C146]" size={20} />
-                <h2 className="text-xl font-bold text-stone-800">生成方案</h2>
+              <div className="flex items-center justify-between mb-4 px-1">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="text-[#95C146]" size={20} />
+                  <h2 className="text-xl font-bold text-stone-800">生成方案</h2>
+                </div>
+                <button 
+                  onClick={() => handleGenerate()}
+                  disabled={state.isGenerating}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-stone-500 hover:text-[#95C146] hover:bg-white rounded-lg text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed group"
+                >
+                  <RefreshCw size={16} className={`group-hover:rotate-180 transition-transform duration-500 ${state.isGenerating ? 'animate-spin' : ''}`} />
+                  <span>不满意？重新生成</span>
+                </button>
               </div>
               
               <div className="grid gap-4">
